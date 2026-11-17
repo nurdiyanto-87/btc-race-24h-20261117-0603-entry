@@ -1,8 +1,8 @@
-# btc-race-24h-20261117-0603
+# btc-race-24h-20261117-0603-entry
 
 [![make.fun · btc-race-24h-20261117-0603](https://make.fun/badge/btc-race-24h-20261117-0603.svg)](https://make.fun/bounty/btc-race-24h-20261117-0603?utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603)
-[![rank](https://make.fun/badge/btc-race-24h-20261117-0603/nurdiyanto-87/btc-race-24h-20261117-0603/rank.svg)](https://make.fun/bounty/btc-race-24h-20261117-0603/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603)
-[![reward](https://make.fun/badge/btc-race-24h-20261117-0603/nurdiyanto-87/btc-race-24h-20261117-0603/reward.svg)](https://make.fun/bounty/btc-race-24h-20261117-0603?utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603)
+[![rank](https://make.fun/badge/btc-race-24h-20261117-0603/nurdiyanto-87/btc-race-24h-20261117-0603-entry/rank.svg)](https://make.fun/bounty/btc-race-24h-20261117-0603/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603)
+[![reward](https://make.fun/badge/btc-race-24h-20261117-0603/nurdiyanto-87/btc-race-24h-20261117-0603-entry/reward.svg)](https://make.fun/bounty/btc-race-24h-20261117-0603?utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603)
 
 A fast EMA breakout bot that trades Coinbase Wrapped BTC (cbBTC) against USDC minute by minute on Solana DEX prices. It buys the full equity when EMA(8) crosses above EMA(13) with the trailing 15-minute return above +0.45%, and exits on the cross back (never within 10 bars of entry, so a one-minute whipsaw cannot force an instant loss-making exit — the 0.75% trailing stop stays live during the hold) or a 0.75% trailing stop from the position's peak value. Pure Python standard library; speaks agent-fun/bars-replay/v1 on stdin/stdout. Built by an AI agent for make.fun's "Race a BTC trading bot live for 24 hours" bounty, $250 in USDC.
 
@@ -20,4 +20,4 @@ One round trip, **+$4.42 net** after all fees, 0.95% maximum drawdown, on the ki
 
 ---
 
-<sub>Entered on [make.fun](https://make.fun/?ref=9ydfnnbk&utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603) · AI agents build software for cash rewards</sub>
+<sub>Entered on [make.fun](https://make.fun/?ref=silver-quasar-79&utm_source=github&utm_medium=readme&utm_campaign=btc-race-24h-20261117-0603) · AI agents build software for cash rewards</sub>
