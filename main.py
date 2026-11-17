@@ -23,9 +23,13 @@ confirmed break and then rides it:
     minutes, and a 30- or 60-minute confirmation arrives after the move
     is half over.
   * Exit, whole position: the EMA(8) crosses back below the EMA(13)
-    (the trend is gone), or the position falls 0.75% below the highest
-    value it reached since entry (a trailing stop that banks the move
-    when momentum rolls over before the averages cross back). No fixed
+    (the trend is gone) — but not within 10 bars of entry, where a
+    cross-down is one-minute noise and an instant exit would lock in
+    the ~26 bps round-trip cost for nothing — or the position falls
+    0.75% below the highest value it reached since entry (a trailing
+    stop that banks the move when momentum rolls over before the
+    averages cross back, and that stays live during the 10-bar hold
+    so a real drop still gets out immediately). No fixed
     take-profit: the one dev-window trade gained 0.45% and was still
     rising when the cross-down fired; capping the upside at an arbitrary
     level throws away the tail the bot is built to catch.
@@ -74,6 +78,17 @@ CONFIRM_BPS = 45
 # Exit: sell the whole position once its value has fallen this far
 # (basis points) below the highest value it reached since entry.
 TRAIL_BPS = 75
+
+# Minimum hold: never exit on a cross-down within this many bars of
+# entry. A cross-down that fast is one-minute noise, and the round trip
+# already cost ~26 bps in fees, slippage and price impact, so an instant
+# exit locks in a near-certain loss. The trailing stop above stays live
+# during the hold, so a real drop still gets out immediately. On the dev
+# window the one trade is held 46 bars, so the rule does not change it;
+# on a synthetic whipsaw (a 2-bar dip 2 bars after entry that flips the
+# gap without tripping the stop) the old bot sells at a $7.19 loss while
+# this bot holds through and keeps the position.
+MIN_HOLD_BARS = 10
 
 BUY_SLIPPAGE_BPS = 200
 SELL_SLIPPAGE_BPS = 10000
@@ -132,6 +147,7 @@ class Trend:
 trend = Trend()
 closes = []       # every close seen, in bar order
 peak_value = 0    # highest value of the open position since entry
+entry_seq = None  # batch seq of the bar the buy was decided on
 
 
 def _sell_all(held):
@@ -149,7 +165,8 @@ def _buy_all(state):
 
 
 def on_batch(state, batch):
-    global peak_value
+    global peak_value, entry_seq
+    seq = batch.get("seq")
     for bar in batch["bars"]:
         if bar["symbol"] != SYMBOL:
             continue
@@ -166,16 +183,21 @@ def on_batch(state, batch):
         value = state.value(SYMBOL, held.qty)
         if value > peak_value:
             peak_value = value
-        if trend.turned_down:
+        bars_held = None if (seq is None or entry_seq is None) else seq - entry_seq
+        if trend.turned_down and (bars_held is None or bars_held >= MIN_HOLD_BARS):
             return _sell_all(held)
         if peak_value and value * 10000 <= peak_value * (10000 - TRAIL_BPS):
             return _sell_all(held)
         return []
     peak_value = 0
+    entry_seq = None
     if trend.crossed_up() and len(closes) > CONFIRM_BARS:
         then = closes[-1 - CONFIRM_BARS]
         if (close - then) * 10000 > then * CONFIRM_BPS:
-            return _buy_all(state)
+            orders = _buy_all(state)
+            if orders:
+                entry_seq = seq
+            return orders
     return []
 
 
